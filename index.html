@@ -63,7 +63,9 @@ body {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     flex-wrap: wrap;
     box-shadow: var(--shadow);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.summary-bar.hidden { transform: translateY(-100%); }
 .summary-bar .logo { font-weight: 700; font-size: 18px; color: var(--accent); display: flex; align-items: center; gap: 8px; }
 .summary-bar .logo svg { width: 22px; height: 22px; }
 .summary-stats { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 14px; }
@@ -1405,6 +1407,32 @@ function toggleTheme() {
         document.getElementById('themeBtn').textContent = '☀️';
         document.getElementById('themeBtn').title = '切换日间模式';
     }
+})();
+
+// ===== Scroll-aware header hide/show =====
+(function initScrollHeader() {
+    const bar = document.getElementById('summaryBar');
+    let lastScrollY = 0;
+    let ticking = false;
+    const threshold = 10;
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                const currentY = window.scrollY;
+                if (currentY <= 0) {
+                    bar.classList.remove('hidden');
+                } else if (currentY > lastScrollY + threshold) {
+                    bar.classList.add('hidden');
+                } else if (currentY < lastScrollY - threshold) {
+                    bar.classList.remove('hidden');
+                }
+                lastScrollY = currentY;
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
 })();
 </script>
 </body>
